@@ -315,7 +315,7 @@ services:
 
   l3node:
     pid: host # allow debugging
-    image: nitro-node-dev-testnode
+    image: hmzakhalid/enclave-nitro-node:latest
     entrypoint: /usr/local/bin/nitro
     ports:
       - "127.0.0.1:3347:3347"
@@ -324,7 +324,19 @@ services:
       - "validator-data:/home/user/.arbitrum/local/nitro"
       - "l1keystore:/home/user/l1keystore"
       - "config:/config"
-    command: --conf.file /config/l3node_config.json --http.port 3347 --http.api net,web3,arb,debug,eth --ws.port 3348
+    command: 
+      --conf.file /config/l3node_config.json 
+      --http.port 3347 
+      --http.api net,web3,arb,debug,eth 
+      --ws.port 3348 
+      --log-level debug
+      --http.server-timeouts.write-timeout=30000s
+      --execution.rpc.gas-cap 100000000000
+    deploy:  
+      resources:
+        limits:
+          cpus: '8.0'  # Allocate 8 CPU cores
+          memory: 16G    # Allocate 8GB RAM
     depends_on:
       - sequencer
       - validation_node
